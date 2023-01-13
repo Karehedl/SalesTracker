@@ -1,1 +1,21 @@
-Console.WriteLine("This is a test to see if Adam understands setting his personal branch upstream for pushing.");
+namespace SalesTracker.Models.TransactionModels
+{
+    public class TransactionCreate
+    {
+        public int Id { get; set; }
+
+        public List<OrderEntity> Orderlist { get; set; }
+
+        public string PaymentMethod { get; set; }
+
+        public DateTime DateOfTransaction { get; set; }
+
+        public int CustomerId { get; set; }
+
+        public CustomerEntity Customer { get; set; }
+
+        public int OrderId { get; set; }
+
+        public OrderEntity Order { get; set; }
+    }
+}
