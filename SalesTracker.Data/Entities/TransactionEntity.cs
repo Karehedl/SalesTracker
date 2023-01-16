@@ -7,7 +7,7 @@ public class TransactionEntity
     [Key]
     public int Id { get; set; }
 
-    public List<OrderEntity> Orderlist { get; set; } //Why is this here? Isn't there only one Order per Transaction?
+    public List<OrderEntity> Orderlist { get; set; }
 
     [Required]
     public string PaymentMethod { get; set; }

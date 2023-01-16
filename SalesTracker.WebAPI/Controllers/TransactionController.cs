@@ -20,36 +20,30 @@ namespace SalesTracker.WebAPI.Controllers
             return Ok(transactions);
         }
 
-        [HttpGet]
-        [Route("{transactionId}")]
-        public async Task<IActionResult> GetTransactionById([FromRoute] int transactionId)
-        {
-            var detail = await _transactionService.GetTransactionByIdAsync(transactionId);
-            return detail is not null ? Ok(detail) : NotFound();
-        }
+        // [HttpGet]
+        // [Route("{transactionId}")]
+        // public async Task<IActionResult> GetTransactionById([FromRoute] int transactionId)
+        // {
+        //     var detail = await _transactionService.GetTransactionByIdAsync(transactionId);
+        //     return detail is not null ? Ok(detail) : NotFound();
+        // }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTransactionAsync([FromBody] TransactionCreate request)
+        public async Task<IActionResult> CreateTransactionAsync([FromBody] TransactionCreate transactionToCreate)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (await _transactionService.CreateTransactionAsync(request))
-                return Ok("Transaction Created Successfully.");
-            else
-                return BadRequest("Transaction could not be created.");
+            return Ok(await _transactionService.CreateTransactionAsync(transactionToCreate));
         }
 
-        [HttpPut]
-        public async Task<IActionResult> TransactionUpdate([FromBody] TransactionDetails request)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+        // [HttpPut]
+        // public async Task<IActionResult> TransactionUpdate([FromBody] TransactionDetails request)
+        // {
+        //     if (!ModelState.IsValid)
+        //         return BadRequest(ModelState);
 
-            return await _transactionService.UpdateTransactionAsync(request)
-            ? Ok("Transaction updated successfully.")
-            : BadRequest("Transaction could not be updated.");
-        }
+        //     return await _transactionService.UpdateTransactionAsync(request)
+        //     ? Ok("Transaction updated successfully.")
+        //     : BadRequest("Transaction could not be updated.");
+        // }
 
         [HttpDelete]
         [Route("{transactionId}")]

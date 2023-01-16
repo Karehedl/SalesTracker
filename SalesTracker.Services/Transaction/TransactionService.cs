@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using SalesTracker.Data;
 using Microsoft.EntityFrameworkCore;
@@ -14,23 +15,41 @@ namespace SalesTracker.Services.Transaction
             _context = context;
         }
 
-        public async Task<bool> CreateTransactionAsync(TransactionCreate transactionToCreate)
+        public async Task<TransactionEntity> CreateTransactionAsync(TransactionCreate transactionToCreate)
         {
-            var customerId = 0; // TODO: get real customer id
-            var orderId = 0; // TODO: get real order id
-
-            var TransactionEntity = new TransactionEntity
+            var transaction = new TransactionEntity()
             {
-                Orderlist = transactionToCreate.Orderlist,
                 PaymentMethod = transactionToCreate.PaymentMethod,
-                DateOfTransaction = DateTime.Now,
-                CustomerId = customerId,
-                OrderId = orderId
+                DateOfTransaction = transactionToCreate.DateOfTransaction,
+                CustomerId = transactionToCreate.CustomerId
             };
 
-            await _context.AddAsync(TransactionEntity);
-            var numberOfChanges = await _context.SaveChangesAsync();
-            return numberOfChanges == 1;
+            foreach (var id in transactionToCreate.OrderIdList)
+            {
+                var order = _context.Order.SingleOrDefault(i => i.Id == id);
+                if (order == null)
+                    return null;
+
+                transaction.Orderlist.Add(order);
+            }
+            await _context.Transactions.AddAsync(transaction);
+            await _context.SaveChangesAsync();
+
+            return transaction;
+
+            // var TransactionEntity = new TransactionEntity
+            // {
+
+            //     // Orderlist = transactionToCreate.OrderIdlist,
+            //     // //var matched = cars.Where(car => intList.Contains(car.id)).ToList();
+            //     // PaymentMethod = transactionToCreate.PaymentMethod,
+            //     // DateOfTransaction = DateTime.Now,
+            //     // CustomerId = customerId
+            // };
+
+            // await _context.AddAsync(TransactionEntity);
+            // var numberOfChanges = await _context.SaveChangesAsync();
+            // return numberOfChanges == 1;
         }
 
         public async Task<bool> DeleteTransactionAsync(int transactionId)
@@ -41,20 +60,20 @@ namespace SalesTracker.Services.Transaction
             return await _context.SaveChangesAsync() == 1;
         }
 
-        public async Task<TransactionDetails> GetTransactionByIdAsync(int transactionId)
-        {
-            var transactionFromDatabase = await _context.Transactions.FirstOrDefaultAsync(entity => entity.Id == transactionId);
+        // public async Task<TransactionDetails> GetTransactionByIdAsync(int transactionId)
+        // {
+        //     var transactionFromDatabase = await _context.Transactions.FirstOrDefaultAsync(entity => entity.Id == transactionId);
 
-            return transactionFromDatabase is null ? null : new TransactionDetails
-            {
-                Id = transactionFromDatabase.Id,
-                Orderlist = transactionFromDatabase.Orderlist,
-                PaymentMethod = transactionFromDatabase.PaymentMethod,
-                DateOfTransaction = transactionFromDatabase.DateOfTransaction,
-                Customer = transactionFromDatabase.Customer,
-                Order = transactionFromDatabase.Order,
-            };
-        }
+        //     return transactionFromDatabase is null ? null : new TransactionDetails
+        //     {
+        //         Id = transactionFromDatabase.Id,
+        //         Orderlist = transactionFromDatabase.Orderlist,
+        //         PaymentMethod = transactionFromDatabase.PaymentMethod,
+        //         DateOfTransaction = transactionFromDatabase.DateOfTransaction,
+        //         Customer = transactionFromDatabase.Customer,
+        //         Order = transactionFromDatabase.Order,
+        //     };
+        // }
 
         public async Task<IEnumerable<TransactionListItem>> GetAllTransactionsAsync()
         {
@@ -71,21 +90,21 @@ namespace SalesTracker.Services.Transaction
             return transactions;
         }
 
-        public async Task<bool> UpdateTransactionAsync(TransactionDetails request)
-        {
-            var transactionToBeUpdated = await _context.Transactions.FindAsync(request.Id);
+        // public async Task<bool> UpdateTransactionAsync(TransactionDetails request)
+        // {
+        //     var transactionToBeUpdated = await _context.Transactions.FindAsync(request.Id);
 
-            if (transactionToBeUpdated == null)
-                return false;
+        //     if (transactionToBeUpdated == null)
+        //         return false;
 
-            transactionToBeUpdated.Orderlist = request.Orderlist;
-            transactionToBeUpdated.PaymentMethod = request.PaymentMethod;
-            transactionToBeUpdated.DateOfTransaction = request.DateOfTransaction;
-            transactionToBeUpdated.Customer = request.Customer;
-            transactionToBeUpdated.Order = request.Order;
+        //     transactionToBeUpdated.Orderlist = request.Orderlist;
+        //     transactionToBeUpdated.PaymentMethod = request.PaymentMethod;
+        //     transactionToBeUpdated.DateOfTransaction = request.DateOfTransaction;
+        //     transactionToBeUpdated.Customer = request.Customer;
+        //     transactionToBeUpdated.Order = request.Order;
 
-            var numberOfChanges = await _context.SaveChangesAsync();
-            return numberOfChanges == 1;
-        }
+        //     var numberOfChanges = await _context.SaveChangesAsync();
+        //     return numberOfChanges == 1;
+        // }
     }
 }
