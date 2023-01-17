@@ -48,8 +48,7 @@ namespace SalesTracker.Data.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Cost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ProductTypeId = table.Column<int>(type: "int", nullable: false),
-                    OrderEntityId = table.Column<int>(type: "int", nullable: true)
+                    ProductTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -58,6 +57,24 @@ namespace SalesTracker.Data.Migrations
                         name: "FK_Items_ProductType_ProductTypeId",
                         column: x => x.ProductTypeId,
                         principalTable: "ProductType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemEntityOrderEntity",
+                columns: table => new
+                {
+                    ItemsId = table.Column<int>(type: "int", nullable: false),
+                    OrdersId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemEntityOrderEntity", x => new { x.ItemsId, x.OrdersId });
+                    table.ForeignKey(
+                        name: "FK_ItemEntityOrderEntity_Items_ItemsId",
+                        column: x => x.ItemsId,
+                        principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -105,9 +122,9 @@ namespace SalesTracker.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Items_OrderEntityId",
-                table: "Items",
-                column: "OrderEntityId");
+                name: "IX_ItemEntityOrderEntity_OrdersId",
+                table: "ItemEntityOrderEntity",
+                column: "OrdersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_ProductTypeId",
@@ -130,11 +147,12 @@ namespace SalesTracker.Data.Migrations
                 column: "OrderId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Items_Order_OrderEntityId",
-                table: "Items",
-                column: "OrderEntityId",
+                name: "FK_ItemEntityOrderEntity_Order_OrdersId",
+                table: "ItemEntityOrderEntity",
+                column: "OrdersId",
                 principalTable: "Order",
-                principalColumn: "Id");
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Order_Transactions_TransactionEntityId",
@@ -150,6 +168,9 @@ namespace SalesTracker.Data.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_Transactions_Order_OrderId",
                 table: "Transactions");
+
+            migrationBuilder.DropTable(
+                name: "ItemEntityOrderEntity");
 
             migrationBuilder.DropTable(
                 name: "Items");
