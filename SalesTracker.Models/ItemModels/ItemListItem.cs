@@ -1,10 +1,8 @@
-
 using System.ComponentModel.DataAnnotations;
 
-public class ProductTypeEdit
-{
-        [Required]
+public class ItemListItem
+    {
         public int Id { get; set; }
-        [Required]
         public string Name { get; set; }
-}
+        
+    }

@@ -7,4 +7,5 @@ public class ProductTypeEntity
         public int Id { get; set; }
         [Required]
         public string Name {get; set; }
+        public List<ItemEntity> Items { get; set; } = new List<ItemEntity>();
     }
