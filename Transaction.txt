@@ -16,20 +16,20 @@ public class TransactionEntity
 
     [ForeignKey(nameof(Customer))]
     public int CustomerId { get; set; }
-    public CustomerEntity Customer { get; set; }
 
+    public CustomerEntity Customer { get; set; }
 
     [ForeignKey(nameof(Order))]
     public int OrderId { get; set; }
-    public OrderEntity Order { get; set; }
 
+    public OrderEntity Order { get; set; }
 
     //this is coming from line 25....
     public Decimal GrandTotal
     {
         get
         {
-            var grandTotal = Order.ItemsInCart.Sum(i => i.Cost);
+            var grandTotal = Order.Items.Sum(i => i.Cost);
             return grandTotal;
         }
     }

@@ -13,45 +13,47 @@ public class OrderService : IOrderService
         _context = context;
     }
 
-    public async Task<OrderDetails> CreateOrder(OrderCreate orderCreate)
-        {  
-            var orderDetails = new OrderDetails();
-            var order = new OrderEntity(){
-                location = orderCreate.location
-            };
+    public async Task<bool> CreateOrder(OrderCreate orderCreate)
+    {
+        //  var orderDetails = new OrderDetails();
+        var order = new OrderEntity()
+        {
+            location = orderCreate.location
+        };
 
-            foreach (var id in orderCreate.ItemIds)
-            {
-                var item = _context.Items.SingleOrDefault(i => i.Id == id);
-                if(item == null)
-                return null;
+        foreach (var id in orderCreate.ItemIds)
+        {
+            var item = _context.Items.SingleOrDefault(i => i.Id == id);
+            if (item == null)
+                return false;
 
-                order.Items.Add(item);
-            }
-            await _context.Order.AddAsync(order);
-            await _context.SaveChangesAsync();
-
-            orderDetails.Id=order.Id; 
-            orderDetails.Location=order.location;
-            orderDetails.Items=order.Items.Select(i=>new ItemListItem{
-                Id = i.Id,
-                Name = i.Name
-            }).ToList();
-
-            return orderDetails;
+            order.ItemsInCart.Add(item);
         }
+        await _context.Order.AddAsync(order);
+        return await _context.SaveChangesAsync() > 0;
+
+        // orderDetails.Id=order.Id; 
+        // orderDetails.Location=order.location;
+        // orderDetails.Items=order.Items.Select(i=>new ItemListItem{
+        //     Id = i.Id,
+        //     Name = i.Name
+        // }).ToList();
+
+        //  return orderDetails;
+    }
 
     public async Task<List<OrderListItem>> GetOrders()
     {
-        var orders = await _context.Order.Include(o=>o.Items).Select(s => new OrderListItem
+        var orders = await _context.Order.Include(o => o.ItemsInCart).Select(s => new OrderListItem
         {
             Id = s.Id,
             location = s.location,
-            Items = s.Items.Select(i=>new ItemListItem{
+            Items = s.ItemsInCart.Select(i => new ItemListItem
+            {
                 Id = i.Id,
                 Name = i.Name
             }).ToList()
-            
+
         }).ToListAsync();
 
         return orders;
@@ -59,21 +61,23 @@ public class OrderService : IOrderService
 
     public async Task<OrderDetails> GetOrderById(int id)
     {
-        var order = await _context.Order.Include(o=>o.Items).FirstOrDefaultAsync(c => c.Id == id);
+        var order = await _context.Order.Include(o => o.ItemsInCart).FirstOrDefaultAsync(c => c.Id == id);
 
         if (order is null) return null;
 
-        return new OrderDetails{
+        return new OrderDetails
+        {
             Id = order.Id,
-            Location = order.location, 
-            Items = order.Items.Select(i=>new ItemListItem{
+            Location = order.location,
+            Items = order.ItemsInCart.Select(i => new ItemListItem
+            {
                 Id = i.Id,
                 Name = i.Name
             }).ToList()
         };
     }
 
-     public async Task<bool> DeleteOrder(int id)
+    public async Task<bool> DeleteOrder(int id)
     {
         var order = await _context.Order.FindAsync(id);
         if (order is null)
@@ -86,30 +90,32 @@ public class OrderService : IOrderService
     }
 
     public async Task<OrderDetails> EditOrder(int id, OrderEdit updateorder)
-        {   
-            var order = await _context.Order.Include(o=>o.Items).FirstOrDefaultAsync(c => c.Id == id);
-            if (order == null) return null;
-            
-            order.location=updateorder.location;
-            order.Items.Clear();
-           
-                  foreach (var things in updateorder.ItemIds)
-            {
-                var item = _context.Items.SingleOrDefault(i => i.Id == things);
-                if(item == null)
+    {
+        var order = await _context.Order.Include(o => o.ItemsInCart).FirstOrDefaultAsync(c => c.Id == id);
+        if (order == null) return null;
+
+        order.location = updateorder.location;
+        order.ItemsInCart.Clear();
+
+        foreach (var things in updateorder.ItemIds)
+        {
+            var item = _context.Items.SingleOrDefault(i => i.Id == things);
+            if (item == null)
                 return null;
 
-                order.Items.Add(item);
-            }
-            await _context.SaveChangesAsync();
+            order.ItemsInCart.Add(item);
+        }
+        await _context.SaveChangesAsync();
 
-             return new OrderDetails{
+        return new OrderDetails
+        {
             Id = order.Id,
-            Location = order.location, 
-            Items = order.Items.Select(i=>new ItemListItem{
+            Location = order.location,
+            Items = order.ItemsInCart.Select(i => new ItemListItem
+            {
                 Id = i.Id,
                 Name = i.Name
             }).ToList()
-        };        
-        }
+        };
+    }
 }

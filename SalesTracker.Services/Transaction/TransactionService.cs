@@ -15,27 +15,69 @@ namespace SalesTracker.Services.Transaction
             _context = context;
         }
 
-        public async Task<TransactionEntity> CreateTransactionAsync(TransactionCreate transactionToCreate)
+        public async Task<TransactionDetails> CreateTransactionAsync(TransactionCreate transactionToCreate)
         {
+            var transactionDetails = new TransactionDetails();
             var transaction = new TransactionEntity()
             {
+
                 PaymentMethod = transactionToCreate.PaymentMethod,
                 DateOfTransaction = transactionToCreate.DateOfTransaction,
-                CustomerId = transactionToCreate.CustomerId
+                CustomerId = transactionToCreate.CustomerId,
+                OrderId = transactionToCreate.OrderId
             };
+            //load customer data
+            CustomerEntity customer = await _context.Customers.FindAsync(transaction.CustomerId);
+            if (customer is null)
+                return null;
 
-            foreach (var id in transactionToCreate.OrderIdList)
-            {
-                var order = _context.Order.SingleOrDefault(i => i.Id == id);
-                if (order == null)
-                    return null;
+            transaction.Customer = customer;
 
-                transaction.Orderlist.Add(order);
-            }
+            var order = await _context.Order.FindAsync(transaction.OrderId);
+            if (order is null)
+                return null;
+
+            transaction.Order = order;
+
+
             await _context.Transactions.AddAsync(transaction);
             await _context.SaveChangesAsync();
 
-            return transaction;
+            // transactionDetails.Id = transaction.Id;
+            // transactionDetails.PaymentMethod = transaction.PaymentMethod;
+            // transactionDetails.DateOfTransaction = transaction.DateOfTransaction;
+            // transactionDetails.CustomerId = transaction.CustomerId;
+            // transactionDetails.Orderlist = transaction.Orderlist.Select(o => new OrderListItem
+            // {
+            //     Id = o.Id,
+            //     location = o.location,
+            //     Items = o.Items.Select(i => new ItemListItem
+            //     {
+            //         Id = i.Id,
+            //         Name = i.Name
+            //     }).ToList()
+            // }).ToList();
+            // return transactionDetails;
+            // transactionDetails.GrandTotal = transaction.GrandTotal;
+            var GrandTotal = transaction.Order.ItemsInCart.Sum(i => i.Cost);
+            return new TransactionDetails
+            {
+                Id = transaction.Id,
+                // Orderlist = transaction.Orderlist.Select(o => new OrderListItem
+                // {
+                //     Id = o.Id,
+                //     location = o.location,
+                //     Items = o.Items.Select(i => new ItemListItem
+                //     {
+                //         Id = i.Id,
+                //         Name = i.Name
+                //     }).ToList()
+                // }).ToList(),
+                CustomerId = transaction.CustomerId,
+                PaymentMethod = transaction.PaymentMethod,
+                DateOfTransaction = transaction.DateOfTransaction,
+                GrandTotal = transaction.Order.ItemsInCart.Sum(i => i.Cost)
+            };
 
             // var TransactionEntity = new TransactionEntity
             // {

@@ -31,6 +31,7 @@ namespace SalesTracker.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateTransactionAsync([FromBody] TransactionCreate transactionToCreate)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             return Ok(await _transactionService.CreateTransactionAsync(transactionToCreate));
         }
 
