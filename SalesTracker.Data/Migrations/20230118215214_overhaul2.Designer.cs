@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace SalesTracker.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230118191721_Overwrite")]
-    partial class Overwrite
+    [Migration("20230118215214_overhaul2")]
+    partial class overhaul2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
