@@ -1,5 +1,5 @@
 # SalesTracker
-<img src="https://github.com/user-attachments/assets/3453c12c-0bbc-49a8-b46c-4fd93aa8268b" width="900px">
+<img src="https://github.com/user-attachments/assets/2a4564f6-80ec-4d0f-bd26-69e77dd18c48" width="600px">
 
 Created by Katelyn Hedlund, Charlie Lipperd, Nelson Fant, and Adam Lair using ASP.NET Core 7 API with MS SQL Server database.
 
