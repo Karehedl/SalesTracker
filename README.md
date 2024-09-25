@@ -1,7 +1,7 @@
 # SalesTracker
 <img src="https://github.com/user-attachments/assets/2a4564f6-80ec-4d0f-bd26-69e77dd18c48" width="600px">
 
-Created by Katelyn Hedlund, Charlie Lipperd, Nelson Fant, and Adam Lair using ASP.NET Core 7 API with MS SQL Server database.
+Created by Katelyn Hedlund, Adam Lair, Charlie Lipperd, and Nelson Fant using ASP.NET Core 7 API with MS SQL Server database.
 
 ## About the App
 Sales Tracker is a web app for users with small businesses to manage their sales data. This includes allowing a user to...
